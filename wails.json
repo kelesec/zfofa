@@ -1,0 +1,13 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "zfofa",
+  "outputfilename": "zfofa",
+  "frontend:install": "cnpm install",
+  "frontend:build": "cnpm run build",
+  "frontend:dev:watcher": "cnpm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "kelesec",
+    "email": "kelesec.gen@gmail.com"
+  }
+}
