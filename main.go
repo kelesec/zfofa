@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 	app2 "zfofa/backend/app"
 )
 
@@ -17,13 +19,17 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "ZFOFA",
-		Width:  850,
-		Height: 600,
+		Title:  "zfofa v0.1 by kele",
+		Width:  900,
+		Height: 620,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		OnStartup: app.Startup,
+		OnStartup: func(ctx context.Context) {
+			// 设置最小尺寸
+			runtime.WindowSetMinSize(ctx, 900, 620)
+			app.Startup(ctx)
+		},
 		Bind: []interface{}{
 			app,
 		},
