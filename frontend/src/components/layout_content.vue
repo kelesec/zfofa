@@ -32,7 +32,7 @@
         </template>
         <template #cert="{ record }">
           <a-table-column>
-            <span @click="ShowDrawer('Cert', record.cert)">{{ record.cert }}</span>
+            <span @click="ShowDrawer('Cert', record.certificate)">{{ record.certificate }}</span>
           </a-table-column>
         </template>
       </a-table>
@@ -42,7 +42,7 @@
                     :simple="true"
                     :show-total="true"
                     :show-page-size="true"
-                    :total="assets.length"
+                    :total="tableAssets.length"
                     @change="CurPageChange"
                     @pageSizeChange="PageSizeChange"
       >
@@ -55,6 +55,7 @@
 import {reactive, ref} from 'vue';
 import {TableColumnData, TableData} from "@arco-design/web-vue";
 import {COLUMN_DATA, DataType, ShowDrawer} from "../utils/layout_content";
+import {EventsOn} from "../../wailsjs/runtime";
 
 /**
  * 表格中每一列的列类型
@@ -65,8 +66,18 @@ const columns: TableColumnData[] = reactive(COLUMN_DATA as TableColumnData[])
  * 填充表格数据
  */
 let tableData = ref<TableData[]>([])    // 填入表格的数据
-let assets: TableData[] = reactive([])  // 总数据
+let tableAssets: TableData[] = reactive([])  // 总数据
 
+/**
+ * 构建 tableAssets 数据填充事件
+ * @param assets DataType[] 数组
+ * @constructor
+ */
+function PushAssets(assets: DataType[]) {
+  tableAssets = assets.slice(0, assets.length)
+  FlashTableData()
+}
+EventsOn("PushAssets", PushAssets)
 
 /**
  * 分页数据绑定
@@ -81,7 +92,7 @@ let perPageSize = ref<number>(10)
 function FlashTableData() {
   let startIndex = (curPage.value - 1) * perPageSize.value
   let endIndex = startIndex + perPageSize.value
-  tableData.value = assets.slice(startIndex, endIndex)
+  tableData.value = tableAssets.slice(startIndex, endIndex)
 }
 
 FlashTableData()

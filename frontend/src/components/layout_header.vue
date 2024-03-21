@@ -71,7 +71,7 @@
           <a-space direction="vertical" size="large">
             <a-input-number type="text"
                             :style="{width: '90px'}"
-                            v-model="assets"
+                            v-model="assetsNumber"
                             :size="'small'"
             />
           </a-space>
@@ -118,9 +118,13 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
+import {reactive, ref} from "vue";
 import {Message} from "@arco-design/web-vue";
-import {Size, WindowGetSize} from "../../wailsjs/runtime";
+import {EventsEmit, EventsOn, Size, WindowGetSize} from "../../wailsjs/runtime";
+import {ExportAssets, StartQuery, StopQuery} from "../../wailsjs/go/app/App";
+import {types} from "../../wailsjs/go/models";
+import {DataType} from "../utils/layout_content";
+import Asset = types.Asset;
 
 /**
  * 计算搜索框宽度
@@ -147,16 +151,17 @@ HandleSearchBoxWidth()
 let searchCondition = ref<string>("") // 查询条件
 let cookie = ref<string>("")  // cookie信息
 let subBtn = ref<boolean>(true) // 按钮状态，true显示开始查询，false显示停止查询
-let threads = ref<number>(10) // 线程数
-let assets = ref<number>(50)  // 资产数
+let threads = ref<number>(5) // 线程数
+let assetsNumber = ref<number>(20)  // 资产数
 let checkAlive = ref<boolean>(false)  // 存活检测
+let assets = reactive<Asset[]>([])
 
 /**
  * 提交查询和停止查询
  * 通过 subBtn.value 值进行判断执行哪个事件，也即按钮状态
  * @constructor
  */
-function Submit() {
+async function Submit() {
   if (subBtn.value) {
     // 提交查询
     if (searchCondition.value == "") {
@@ -165,12 +170,32 @@ function Submit() {
     }
 
     Message.success("开始查询")
+    EventsEmit("ClearLog")  // 每次开始前清空一下日志
+    subBtn.value = false
+
+    // 提交查询参数
+    assets = await StartQuery({
+      keywords: searchCondition.value,
+      cookie: cookie.value,
+      threads: threads.value,
+      assetsNumber: assetsNumber.value,
+      checkAlive: checkAlive.value
+    })
+
+    let tableAssets: DataType[] = []
+    assets.forEach((asset, index)=> {
+      tableAssets.push(new DataType(index+1, asset))
+    })
+
+    // 触发事件，响应给表格
+    EventsEmit("PushAssets", tableAssets)
+    subBtn.value = true
   } else {
     // 停止查询
     Message.error("停止查询")
+    await StopQuery()
+    subBtn.value = true
   }
-
-  subBtn.value = !subBtn.value
 }
 
 
@@ -183,15 +208,22 @@ let exportFileType = ref<string[]>([])
  * 导出资产到文件中
  * @constructor
  */
-function Export() {
+async function Export() {
   if (exportFileType.value.length === 0) {
     Message.error("请选择文件导出类型")
     return
   }
 
   // 导出文件
-  Message.success("导出成功，保存在/tmp/results")
+  await ExportAssets(exportFileType.value)
+  Message.success("文件导出成功")
 }
+
+function ShowMsg(msg: string) {
+  Message.info(msg)
+}
+
+EventsOn("showMsg", ShowMsg)
 </script>
 
 <style scoped>

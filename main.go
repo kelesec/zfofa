@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"embed"
+	"fmt"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	app2 "zfofa/backend/app"
+	"zfofa/backend/core/filelog"
 )
 
 //go:embed all:frontend/dist
@@ -28,7 +30,10 @@ func main() {
 		OnStartup: func(ctx context.Context) {
 			// 设置最小尺寸
 			runtime.WindowSetMinSize(ctx, 900, 620)
+
+			// 传递上下文
 			app.Startup(ctx)
+			filelog.FileContext = ctx
 		},
 		Bind: []interface{}{
 			app,
@@ -36,6 +41,7 @@ func main() {
 	})
 
 	if err != nil {
-		println("Error:", err.Error())
+		fmt.Printf("Error: %s", err)
+		filelog.Fatalf("Error: %s", err)
 	}
 }

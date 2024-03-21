@@ -30,7 +30,6 @@ watch(logInfo.value, (newLog) => {
   }
 
   logData.value = newLog.join('\n')
-  logData.value += '\n'
 
   // 确保滚动条始终在最下方
   if (scroll.value !== undefined) {

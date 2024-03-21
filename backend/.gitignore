@@ -1,0 +1,10 @@
+.idea
+.idea/*
+
+test
+test/*
+
+*.dev.md
+*.log
+*.yaml
+*.json
