@@ -138,3 +138,28 @@ func SaveAssets(outfile string, assets []Asset) {
 		jw.Write(assets)
 	}
 }
+
+/*
+----------------------------------------------------------------------------------------------------------
+ 去重检测
+----------------------------------------------------------------------------------------------------------
+*/
+
+func RemoveDuplicateAssets(assets []Asset) []Asset {
+	var newAssets []Asset
+	var flag bool
+	for _, asset := range assets {
+		for _, newAsset := range newAssets {
+			if newAsset.Compare(asset) {
+				flag = true
+			}
+		}
+
+		if !flag {
+			newAssets = append(newAssets, asset)
+			flag = false
+		}
+	}
+
+	return newAssets
+}

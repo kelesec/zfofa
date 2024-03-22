@@ -110,6 +110,7 @@ func (a *App) StartQuery(setting QuerySetting) []types.Asset {
 		SearchType: &fst,
 	}
 	assets := e.Run(ctx, cancel)
+	assets = types.RemoveDuplicateAssets(assets)
 
 	if setting.CheckAlive {
 		filelog.Info("Start Check Alive. Assets: %d", len(assets))
