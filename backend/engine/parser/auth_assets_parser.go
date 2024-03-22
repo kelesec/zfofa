@@ -48,11 +48,12 @@ func AuthAssetsParser(body []byte) types.ParseResult {
 }
 
 func matchIcon(b []byte) string {
-	match := iconReg.FindSubmatch(b)
-	if len(match) == 0 {
-		return ""
-	}
-	return strings.TrimSpace(string(match[1]))
+	//match := iconReg.FindSubmatch(b)
+	//if len(match) == 0 {
+	//	return ""
+	//}
+	//return strings.TrimSpace(string(match[1]))
+	return ""
 }
 
 func matchHost(b []byte) string {
