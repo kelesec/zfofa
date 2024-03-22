@@ -149,15 +149,16 @@ func RemoveDuplicateAssets(assets []Asset) []Asset {
 	var newAssets []Asset
 	var flag bool
 	for _, asset := range assets {
+		flag = false
 		for _, newAsset := range newAssets {
 			if newAsset.Compare(asset) {
 				flag = true
+				break
 			}
 		}
 
 		if !flag {
 			newAssets = append(newAssets, asset)
-			flag = false
 		}
 	}
 
