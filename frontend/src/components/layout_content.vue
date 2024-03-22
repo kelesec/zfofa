@@ -11,7 +11,7 @@
                :pagination="false">
         <template #host="{ record }">
           <a-table-column>
-            <a-link :href="record.host">
+            <a-link href="javascript:void(0);" @click="OpenUrlByDefaultBrowser(record.host)">
               <a-avatar :size="16" :style="{marginRight: '5px'}">
                 <img v-if="record.icon" alt="avatar" :src="`data:image/png;base64, ${record.icon}`"/>
                 <span v-else>ZFOFA</span>
@@ -22,7 +22,9 @@
         </template>
         <template #ip="{ record }">
           <a-table-column>
-            <a-link href="{{ record.ip }}" icon>{{ record.ip }}</a-link>
+            <a-link href="javascript:void(0);"
+                    @click="OpenIpByIp138(record.ip)"
+                    icon>{{ record.ip }}</a-link>
           </a-table-column>
         </template>
         <template #header="{ record }">
@@ -55,7 +57,7 @@
 import {reactive, ref} from 'vue';
 import {TableColumnData, TableData} from "@arco-design/web-vue";
 import {COLUMN_DATA, DataType, ShowDrawer} from "../utils/layout_content";
-import {EventsOn} from "../../wailsjs/runtime";
+import {BrowserOpenURL, EventsOn} from "../../wailsjs/runtime";
 
 /**
  * 表格中每一列的列类型
@@ -134,6 +136,25 @@ function HandleWindowSize() {
 
 window.addEventListener('resize', HandleWindowSize)
 HandleWindowSize()
+
+
+/**
+ * 使用默认浏览器打开URL
+ * @param url
+ * @constructor
+ */
+function OpenUrlByDefaultBrowser(url: string) {
+  BrowserOpenURL(url)
+}
+
+/**
+ * 点击IP地址链接时，跳转查询IP信息
+ * @param ip
+ * @constructor
+ */
+function OpenIpByIp138(ip: string) {
+  BrowserOpenURL(`https://www.ip138.com/iplookup.php?ip=${ip}`)
+}
 </script>
 
 <style scoped>
