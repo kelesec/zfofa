@@ -25,7 +25,8 @@ func (c *ConcurrentRunner) Run(ctx context.Context, searchType types.FofaSearchT
 	reqUrls := parser.GenerateUrlsWithAuth(searchType)
 	if reqUrls == nil {
 		log.Println(errors.New("error: get request url fail"))
-		filelog.Fatalf(errors.New("error: get request url fail").Error())
+		filelog.Error(errors.New("error: get request url fail").Error())
+		return nil
 	}
 
 	log.Printf("Start scraping data. --%s", "Auth::ConcurrentRunner::Run")
