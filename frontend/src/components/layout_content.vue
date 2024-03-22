@@ -144,6 +144,9 @@ HandleWindowSize()
  * @constructor
  */
 function OpenUrlByDefaultBrowser(url: string) {
+  if (!url.startsWith("http")) {
+    url = `http://${url}`
+  }
   BrowserOpenURL(url)
 }
 
