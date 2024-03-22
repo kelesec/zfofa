@@ -219,11 +219,21 @@ async function Export() {
   Message.success("文件导出成功")
 }
 
-function ShowMsg(msg: string) {
-  Message.info(msg)
-}
 
-EventsOn("showMsg", ShowMsg)
+/**
+ * 增加快捷键
+ */
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.key.toUpperCase() === 'S') {
+    // Ctrl + S 保存
+    Export()
+  } else if (e.ctrlKey && e.key.toUpperCase() === 'C') {
+    // Ctrl + C 停止查询
+    Message.error("停止查询")
+    StopQuery()
+    subBtn.value = true
+  }
+})
 </script>
 
 <style scoped>
