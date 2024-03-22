@@ -9,7 +9,9 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
+	"zfofa/backend/check_alive"
 	"zfofa/backend/core/conf"
 	"zfofa/backend/core/fetch"
 	"zfofa/backend/core/filelog"
@@ -101,15 +103,47 @@ func (a *App) StartQuery(setting QuerySetting) []types.Asset {
 		}
 	}
 
-	// 存活判断
-
 	// 查询
 	ctx, cancel := context.WithCancel(context.Background())
 	a.StopCancel = cancel
 	e := engine.Engine{
 		SearchType: &fst,
 	}
-	a.Assets = append(a.Assets, e.Run(ctx, cancel)...)
+	assets := e.Run(ctx, cancel)
+
+	if setting.CheckAlive {
+		filelog.Info("Start Check Alive. Assets: %d", len(assets))
+
+		// 探测存活
+		out := make(chan types.Asset, 50)
+		ck := check_alive.CheckAlive{
+			MaxCheckAliveWorkers: a.config.FofaToolConf.MaxCheckAliveWorkers,
+		}
+
+		ctx, cancel := context.WithCancel(context.Background())
+		ck.Run(ctx, assets, out)
+
+		wg := sync.WaitGroup{}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				case asset := <-out:
+					a.Assets = append(a.Assets, asset)
+				}
+
+				if len(a.Assets) == len(assets) {
+					cancel()
+				}
+			}
+		}()
+		wg.Wait()
+	} else {
+		a.Assets = append(a.Assets, assets...)
+	}
 
 	log.Printf(
 		"[OVER] all requests closed, %d assets successfully acquired",

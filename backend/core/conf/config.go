@@ -20,6 +20,9 @@ type FofaToolConf struct {
 
 	// 设置HTTP代理
 	HttpProxy string `yaml:"http_proxy"`
+
+	// 存活检测时，创建的协程数
+	MaxCheckAliveWorkers int `yaml:"max_check_alive_workers"`
 }
 
 type Config struct {
@@ -37,6 +40,7 @@ func ExportConf() (bool, error) {
 			MaxTryFetches:                 7,
 			BetweenAfterTimeAndBeforeTime: 7,
 			HttpProxy:                     "http://ip:port",
+			MaxCheckAliveWorkers:          100,
 		},
 	}
 
