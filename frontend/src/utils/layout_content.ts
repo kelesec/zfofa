@@ -1,4 +1,4 @@
-import {Drawer} from "_@arco-design_web-vue@2.55.0@@arco-design/web-vue";
+import {Drawer} from "@arco-design/web-vue";
 import {types} from "../../wailsjs/go/models";
 import Asset = types.Asset;
 
